@@ -12,6 +12,7 @@
 #include <cli.h>
 #include <console.h>
 #include <version.h>
+#include <asm/gpio.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -59,8 +60,12 @@ static void update_file(int mmc_dev, int mmc_part, uint64_t addr,
 		if (0 == ret)
 			break;
 	}
-	if (i >= 10)
+	if (i >= 10) {
 		printf("[%s %d] %s failed.", __FUNCTION__, __LINE__, command);
+		// 升级失败则灭灯
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 1);
+		return;
+	}
 
 	memset(command, 0, 64);
 	sprintf(command, "mmc dev %d %d", mmc_dev, mmc_part);
@@ -69,8 +74,11 @@ static void update_file(int mmc_dev, int mmc_part, uint64_t addr,
 		if (0 == ret)
 			break;
 	}
-	if (i >= 10)
+	if (i >= 10) {
 		printf("[%s %d] %s failed.", __FUNCTION__, __LINE__, command);
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 1);
+		return;
+	}
 
 	memset(command, 0, 64);
 	sprintf(command, "mmc write 0x%llx 0x%llx 0x%llx", addr, mmc_blk, mmc_cnt);
@@ -79,8 +87,11 @@ static void update_file(int mmc_dev, int mmc_part, uint64_t addr,
 		if (0 == ret)
 			break;
 	}
-	if (i >= 10)
+	if (i >= 10) {
 		printf("[%s %d] %s failed.", __FUNCTION__, __LINE__, command);
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 1);
+		return;
+	}
 }
 
 static void update_by_usb(void)
@@ -89,6 +100,19 @@ static void update_by_usb(void)
 	int ret = 0;
 	char command[64] = {0};
 
+	gpio_request(IMX_GPIO_NR(1, 4), NULL);
+
+	/* 左下角灯，刚开始快闪5次，后常亮 */
+	for (i = 0; i < 5; i++)
+	{
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 0);
+		mdelay(100);
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 1);
+		mdelay(100);
+	}
+	gpio_direction_output(IMX_GPIO_NR(1, 4) , 0);
+
+	// usb start
 	memset(command, 0, 64);
 	sprintf(command, "usb start");
 	ret = run_command(command, 0);
@@ -117,6 +141,21 @@ static void update_by_usb(void)
 
 			break;
 		}
+	}
+
+	if (i >= 10) {
+		/* 如果没有U盘 则灭灯 */
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 1);
+		return;
+	}
+
+	/* 升级完成后慢闪10次 */
+	for (i = 0; i < 10; i++)
+	{
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 0);
+		mdelay(500);
+		gpio_direction_output(IMX_GPIO_NR(1, 4) , 1);
+		mdelay(500);
 	}
 }
 

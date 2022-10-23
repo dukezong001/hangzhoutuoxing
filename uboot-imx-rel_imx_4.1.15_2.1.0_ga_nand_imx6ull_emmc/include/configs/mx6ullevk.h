@@ -96,6 +96,7 @@
 #define CONFIG_MFG_NAND_PARTITION ""
 #endif
 
+#if 0
 #define CONFIG_MFG_ENV_SETTINGS \
 	"mfgtool_args=setenv bootargs console=${console},${baudrate} " \
 	    CONFIG_BOOTARGS_CMA_SIZE \
@@ -216,6 +217,14 @@
 		   "fi; " \
 	   "else run netboot; fi"
 #endif
+#endif
+
+#define CONFIG_EXTRA_ENV_SETTINGS  \
+"bootargs=console=ttymxc0,115200 root=/dev/mmcblk1p2 rootfstype=ext4 rw rootwait blkdevparts=mmcblk1:200M(16Menv_64Mkernel_16Mdtb),200M(rootfs),1024M(data),5632M(pbox)\0"
+
+#define CONFIG_BOOTCOMMAND \
+"mmc dev 1 0;mmc read 0x80800000 0x8000 0x5000;mmc read 0x83000000 0x28000 0x800;bootz 80800000 - 83000000;"
+
 
 /* Miscellaneous configurable options */
 #define CONFIG_CMD_MEMTEST

@@ -1,0 +1,84 @@
+
+/*
+ * Copyright (C) 2016 Freescale Semiconductor, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include "imx6ul-14x14-evk-c2.dts"
+
+&usdhc2 {
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc2_8bit>;
+	pinctrl-1 = <&pinctrl_usdhc2_8bit_100mhz>;
+	pinctrl-2 = <&pinctrl_usdhc2_8bit_200mhz>;
+	bus-width = <8>;
+	non-removable;
+	status = "disabled";
+};
+&qspi {
+	status = "disabled";
+};
+&gpmi {
+	pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_nand>;
+	status = "okay";
+	partition@0{
+		label = "boot";
+		reg = <0x0000 0x400000>; /*4M*/
+	};
+	partition@1{
+		label = "logo";
+		reg = <0x400000 0x200000>; /*2M*/
+	};
+	partition@2{
+		label = "ENV";
+		reg = <0x600000 0x100000>; /*1M*/
+	};
+	partition@3{
+		label = "DTB";
+		reg = <0x700000 0x300000>; /*3M*/
+	};
+	partition@4{
+		label = "kernel";
+		reg = <0xa00000 0x800000>; /*8M*/
+	};
+	partition@5{
+		label = "rootfs";
+		reg = <0x1200000 0xee00000>;
+	};
+};
+&lcdif {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lcdif_dat
+		     &pinctrl_lcdif_ctrl>;
+	display = <&display0>;
+	status = "okay";
+
+	display0: display {
+		bits-per-pixel = <16>;
+		bus-width = <16>;
+
+		display-timings {
+			native-mode = <&timing0>;
+			timing0: timing0 {
+			clock-frequency = <40000000>;
+			hactive = <800>;
+			vactive = <600>;
+			hfront-porch = <210>;
+			hback-porch = <46>;
+			hsync-len = <1>;
+			vback-porch = <23>;
+			vfront-porch = <12>;
+			vsync-len = <1>;
+
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <0>;
+			};
+		};
+	};
+};

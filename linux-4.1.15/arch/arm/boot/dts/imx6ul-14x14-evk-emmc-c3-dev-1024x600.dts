@@ -1,0 +1,112 @@
+
+/*
+ * Copyright (C) 2016 Freescale Semiconductor, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include "imx6ul-14x14-evk-c3.dts"
+
+&usdhc2 {
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc2_8bit>;
+	pinctrl-1 = <&pinctrl_usdhc2_8bit_100mhz>;
+	pinctrl-2 = <&pinctrl_usdhc2_8bit_200mhz>;
+	bus-width = <8>;
+	non-removable;
+	status = "okay";
+};
+&dev_gpio {
+	status = "okay";
+
+		gpio0{
+			label = "DI1";
+			gpios = <&gpio4 21 0>;
+			default-direction = "in";
+		};
+		gpio1{
+			label = "DI2";
+			gpios = <&gpio4 22 0>;
+			default-direction = "in";
+		};
+		gpio2{
+			label = "DI3";
+			gpios = <&gpio4 23 0>;
+			default-direction = "in";
+		};
+		gpio3{
+			label = "DI4";
+			gpios = <&gpio4 24 0>;
+			default-direction = "in";
+		};
+		gpio4{
+			label = "GPRS_PWR";
+			gpios = <&gpio1 2 0>;
+			default-direction = "out";
+		};
+		gpio5{
+			label = "GPRS_OFF";
+			gpios = <&gpio1 1 1>;
+			default-direction = "in";
+		};
+		gpio6{
+			label = "PG";
+			gpios = <&gpio1 18 1>;
+			default-direction = "in";
+		};
+		gpio7{
+			label = "ESAM_SIM";
+			gpios = <&gpio4 19 0>;
+			default-direction = "out";
+		};
+		gpio8{
+			label = "ESAM_SIM_PWR";
+			gpios = <&gpio4 20 0>;
+			default-direction = "out";
+		};
+		gpio9{
+			label = "SYS_RUN_GREEN";
+			gpios = <&gpio5 9 0>;
+			default-direction = "out";
+		};
+		gpio10{
+			label = "SYS_ERROR_RED";
+			gpios = <&gpio1 9 1>;
+			default-direction = "out";
+		};
+};
+
+&lcdif {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lcdif_dat
+		     &pinctrl_lcdif_ctrl>;
+	display = <&display0>;
+	status = "okay";
+
+	display0: display {
+		bits-per-pixel = <24>;
+		bus-width = <24>;
+
+		display-timings {
+			native-mode = <&timing0>;
+			timing0: timing0 {
+			clock-frequency = <33000000>;
+			hactive = <1024>;
+			vactive = <600>;
+			hfront-porch = <160>;
+			hback-porch = <320>;
+			hsync-len = <1>;
+			vback-porch = <35>;
+			vfront-porch = <12>;
+			vsync-len = <1>;
+
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <0>;
+			};
+		};
+	};
+};

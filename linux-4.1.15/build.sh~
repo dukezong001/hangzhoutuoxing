@@ -1,0 +1,28 @@
+#!/bin/bash
+
+
+#use tool from buildroot: ok.
+#export LD_LIBRARY_PATH=/opt/imx6/rt-ics/usr/lib:$LD_LIBRARY_PATH
+#export PATH=/opt/imx6/rt-ics/usr/bin/:$PATH
+#export CROSS_COMPILE=arm-linux-gnueabi-
+#export ARCH=arm
+
+
+#
+#export LD_LIBRARY_PATH=/home/ldsh/imx6/tool/gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux/lib:$LD_LIBRARY_PATH
+#export PATH=/home/ldsh/imx6/tool/gcc-linaro-arm-linux-gnueabi-2012.04-20120426_linux/bin/:$PATH
+
+#export CROSS_COMPILE=arm-linux-gnueabi-
+#export ARCH=arm
+
+
+#gcc version 4.6.2 20110630 (prerelease) (Freescale MAD -- Linaro 2011.07 -- Built at 2011/08/10 09:20) 
+#emsys
+make zImage -j4
+cp arch/arm/boot/zImage /mnt/windows/mfgtools-with-rootfs_nand_mao_four_gateway/mfgtools/Profiles/Linux/OS Firmware/files/IMX6UL-IGW/
+
+#实际使用版本
+#uboot:	 ~/imx6/sw/linux/uboot/L3.0.35_4.1.0_130816/u-boot-2009.08
+#kernel: ~/imx6/sw/linux/kernel/L3.0.35_4.1.0_130816/linux-3.0.35
+#rootfs:
+#

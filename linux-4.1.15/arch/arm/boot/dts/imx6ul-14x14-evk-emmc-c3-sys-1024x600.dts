@@ -1,0 +1,75 @@
+
+/*
+ * Copyright (C) 2016 Freescale Semiconductor, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include "imx6ul-14x14-evk-c3.dts"
+
+&usdhc2 {
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc2_8bit>;
+	pinctrl-1 = <&pinctrl_usdhc2_8bit_100mhz>;
+	pinctrl-2 = <&pinctrl_usdhc2_8bit_200mhz>;
+	bus-width = <8>;
+	non-removable;
+	status = "okay";
+};
+&lcdif {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lcdif_dat
+		     &pinctrl_lcdif_ctrl>;
+	display = <&display0>;
+	status = "okay";
+
+	display0: display {
+		bits-per-pixel = <24>;
+		bus-width = <24>;
+
+		display-timings {
+			native-mode = <&timing0>;
+			timing0: timing0 {
+			clock-frequency = <33000000>;
+			hactive = <1024>;
+			vactive = <600>;
+			hfront-porch = <160>;
+			hback-porch = <320>;
+			hsync-len = <1>;
+			vback-porch = <35>;
+			vfront-porch = <12>;
+			vsync-len = <1>;
+
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <0>;
+			};
+		};
+	};
+};
+&iomuxc {
+	imx6ul-evk {
+		pinctrl_hog_1: hoggrp-1 {
+			fsl,pins = <
+				MX6UL_PAD_LCD_RESET__WDOG1_WDOG_ANY    0x30b0
+				MX6UL_PAD_UART1_RTS_B__GPIO1_IO19	0x17059 /* SD1 CD */
+				MX6UL_PAD_GPIO1_IO05__USDHC1_VSELECT	0x17059 /* SD1 VSELECT */
+				MX6UL_PAD_CSI_DATA00__GPIO4_IO21		0x130b1
+				MX6UL_PAD_CSI_DATA01__GPIO4_IO22		0x130b1
+				MX6UL_PAD_CSI_DATA02__GPIO4_IO23		0x130b1
+				MX6UL_PAD_CSI_DATA03__GPIO4_IO24		0x130b1
+				MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0xb0
+				MX6UL_PAD_GPIO1_IO01__GPIO1_IO01	0xb0
+				MX6UL_PAD_UART1_CTS_B__GPIO1_IO18    0xb0
+				MX6UL_PAD_CSI_VSYNC__GPIO4_IO19      0x1b038
+				MX6UL_PAD_CSI_HSYNC__GPIO4_IO20      0x1b038
+				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09	0x70a1
+				MX6UL_PAD_GPIO1_IO09__GPIO1_IO09	0xb0
+
+				>;
+		};
+	};
+};

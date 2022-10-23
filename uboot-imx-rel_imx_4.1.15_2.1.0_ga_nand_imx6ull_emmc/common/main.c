@@ -40,6 +40,86 @@ static void run_preboot_environment_command(void)
 #endif /* CONFIG_PREBOOT */
 }
 
+#define UBOOT_NAME ("u-boot.imx")
+#define KERNEL_NAME ("zimage")
+#define DTB_NAME ("b-imx6ull4igwemmc-emmc.dtb")
+#define ROOTFS_NAME ("rootfs.ext4")
+
+static void update_file(int mmc_dev, int mmc_part, uint64_t addr, 
+								uint64_t mmc_blk, uint64_t mmc_cnt, char *filename)
+{
+	int ret = 0;
+	int i = 0;
+	char command[64] = {0};
+
+	memset(command, 0, 64);
+	sprintf(command, "fatload usb 0 0x%llx %s", addr, filename);
+	for (i = 0; i < 10; i++) {
+		ret = run_command(command, 0);
+		if (0 == ret)
+			break;
+	}
+	if (i >= 10)
+		printf("[%s %d] %s failed.", __FUNCTION__, __LINE__, command);
+
+	memset(command, 0, 64);
+	sprintf(command, "mmc dev %d %d", mmc_dev, mmc_part);
+	for (i = 0; i < 10; i++) {
+		ret = run_command(command, 0);
+		if (0 == ret)
+			break;
+	}
+	if (i >= 10)
+		printf("[%s %d] %s failed.", __FUNCTION__, __LINE__, command);
+
+	memset(command, 0, 64);
+	sprintf(command, "mmc write 0x%llx 0x%llx 0x%llx", addr, mmc_blk, mmc_cnt);
+	for (i = 0; i < 10; i++) {
+		ret = run_command(command, 0);
+		if (0 == ret)
+			break;
+	}
+	if (i >= 10)
+		printf("[%s %d] %s failed.", __FUNCTION__, __LINE__, command);
+}
+
+static void update_by_usb(void)
+{
+	int i = 0;
+	int ret = 0;
+	char command[64] = {0};
+
+	memset(command, 0, 64);
+	sprintf(command, "usb start");
+	ret = run_command(command, 0);
+	if (0 != ret)
+	{
+		printf("[%s %d] usb start failed.", __FUNCTION__, __LINE__);
+	}
+
+	for (i = 0; i < 10; i++)
+	{
+		memset(command, 0, 64);
+		sprintf(command, "fatls usb 0");
+		ret = run_command(command, 0);
+		if (0 == ret) {
+			printf("============update uboot=============\n");
+			update_file(1, 1, 0x80800000, 0x02, 0x800, UBOOT_NAME);
+			
+			printf("============update kernel=============\n");
+			update_file(1, 0, 0x80800000, 0x8000, 0x5000, KERNEL_NAME);
+			
+			printf("============update dtb=============\n");
+			update_file(1, 0, 0x80800000, 0x28000, 0x800, DTB_NAME);
+			
+			printf("============update rootfs=============\n");
+			update_file(1, 0, 0x80800000, 0x64000, 0x28000, ROOTFS_NAME);
+
+			break;
+		}
+	}
+}
+
 /* We come here after U-Boot is initialised and ready to process commands */
 void main_loop(void)
 {
@@ -69,6 +149,9 @@ void main_loop(void)
 	if (cli_process_fdt(&s))
 		cli_secure_boot_cmd(s);
 //puts("1111111111111111111111111111111111111.\n");
+
+	update_by_usb();
+
 	autoboot_command(s);
 //puts("2222222222222222222222222222222222222.\n");
 	cli_loop();
